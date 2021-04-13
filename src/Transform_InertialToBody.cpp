@@ -46,7 +46,7 @@ void Transform_InertialToBody::process(DataMsg* t_msg, Port* t_port){
         Vector3D<float> yaw_rotation;
         yaw_rotation.x = 0.0;
         yaw_rotation.y = 0.0;
-        yaw_rotation.z = -yaw;
+        yaw_rotation.z = yaw;
         _rotation_matrix.Update(yaw_rotation);
     }
 }

@@ -3,10 +3,11 @@
 KalmanFilter::KalmanFilter(float t_u_scale) {
     _input_port_0 = new InputPort(ports_id::IP_0_ACC, this);
     _input_port_1 = new InputPort(ports_id::IP_1_POS, this);
+    _input_port_2 = new InputPort(ports_id::IP_2_RESET, this);
     _output_port_0 = new OutputPort(ports_id::OP_0_POS, this);
     _output_port_1 = new OutputPort(ports_id::OP_1_VEL, this);
     _output_port_2 = new OutputPort(ports_id::OP_2_BIAS, this);
-    _ports = {_input_port_0, _input_port_1, _output_port_0, _output_port_1, _output_port_2};
+    _ports = {_input_port_0, _input_port_1, _input_port_2, _output_port_0, _output_port_1, _output_port_2};
     resetFilter();
 }
 
@@ -28,10 +29,9 @@ void KalmanFilter::resetFilter() {
           _dt,
           0;
     _Q = _G*_war_w*_G.transpose();
+    _Q(2,2)=_war_w*0.000010;
     _H_pos << 1, 0, 0;
-    _R_pos = 0.0001;
      std::cout<<"RESETTING KALMAN FILTER\n";
-    
 }
 
 void KalmanFilter::process(DataMsg* t_msg, Port* t_port) {
@@ -40,8 +40,7 @@ void KalmanFilter::process(DataMsg* t_msg, Port* t_port) {
             if(std::isnan(_x(0,0)) || std::isnan(_x(1,0))){
                 resetFilter();
             }
-            else
-            {
+            else {
                 FloatMsg position_data, velocity_data, bias_data;
                 position_data.data=_x(0,0);
                 velocity_data.data=_x(1,0);
@@ -55,7 +54,9 @@ void KalmanFilter::process(DataMsg* t_msg, Port* t_port) {
         _pos_val = ((FloatMsg*)t_msg)->data;
         doMeasurementStep(((FloatMsg*)t_msg)->data);
     }
-
+    else if(t_port->getID() == ports_id::IP_2_RESET) {
+        this->resetFilter();
+    }
 }
 
 void KalmanFilter::setTimeStep(float t_dt) {
@@ -73,4 +74,3 @@ void KalmanFilter::doMeasurementStep(float t_z) {
     _x = _x + t_K*(t_z - _H_pos*_x);
     _P = (Eigen::Matrix3f::Identity() - t_K*_H_pos)*_P;
 }
-

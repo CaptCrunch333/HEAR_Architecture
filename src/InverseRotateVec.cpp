@@ -34,16 +34,18 @@ void InverseRotateVec::process(DataMsg* t_msg, Port* t_port) {
 
 void InverseRotateVec::updateRotationMatrix() {
     Eigen::Matrix<float, 3, 3> R_inertia;
-    R_inertia = _body_rotation_matrix.Update(_body_orientation).transpose();
+    _body_rotation_matrix.Update(_body_orientation);
+    _body_rotation_matrix.Transpose();
     rotateVector(R_inertia);
 }
 
 void InverseRotateVec::rotateVector(Eigen::Matrix<float, 3, 3> R_inertia) {
-    _rotated_vec.x = _vec_data.x * R_inertia(0, 0) + _vec_data.y * R_inertia(0, 1) + _vec_data.z * R_inertia(0, 2);
-    _rotated_vec.y = _vec_data.x * R_inertia(1, 0) + _vec_data.y * R_inertia(1, 1) + _vec_data.z * R_inertia(1, 2);
-    _rotated_vec.z = _vec_data.x * R_inertia(2, 0) + _vec_data.y * R_inertia(2, 1) + _vec_data.z * R_inertia(2, 2);
+    // _rotated_vec.x = _vec_data.x * R_inertia(0, 0) + _vec_data.y * R_inertia(0, 1) + _vec_data.z * R_inertia(0, 2);
+    // _rotated_vec.y = _vec_data.x * R_inertia(1, 0) + _vec_data.y * R_inertia(1, 1) + _vec_data.z * R_inertia(1, 2);
+    // _rotated_vec.z = _vec_data.x * R_inertia(2, 0) + _vec_data.y * R_inertia(2, 1) + _vec_data.z * R_inertia(2, 2);
+    
     Vector3DMsg point_msg;
-    point_msg.data = _rotated_vec;
+    point_msg.data = _body_rotation_matrix.TransformVector(_vec_data);
     this->_output_port->receiveMsgData(&point_msg);
 }
 

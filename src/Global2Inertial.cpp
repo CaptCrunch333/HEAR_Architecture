@@ -25,9 +25,9 @@ Global2Inertial::Global2Inertial() {
     calib_point1.y = 0.0;
     calib_point1.z = 0.0; //No need to correct height here. Flight Scenario is responsible for that.
 
-    // calib_point2.x = 0.0; //defines x(+) axis
-    // calib_point2.y = -0.80;
-    // calib_point2.z = 0.0;
+    calib_point2.x = 0.0; //defines x(+) axis
+    calib_point2.y = -0.80;
+    calib_point2.z = 0.0;
 
     // calib_point3.x = 24.44814808; //correcting x offset in y
     // calib_point3.y = 54.39666318;
@@ -45,9 +45,9 @@ Global2Inertial::Global2Inertial() {
     // calib_point4_true_SI.y = 6 ;
     // calib_point4_true_SI.z = 0.0;
 
-    // calibrated_reference_inertial_heading=-90.*(M_PI/180.);
-    // Vector3D<double> calib_points_diff = calib_point2 - calib_point1;
-    // calibrated_global_to_inertial_angle = atan2(calib_points_diff.y, calib_points_diff.x);
+    calibrated_reference_inertial_heading=-90.*(M_PI/180.);
+    Vector3D<double> calib_points_diff = calib_point2 - calib_point1;
+    calibrated_global_to_inertial_angle = atan2(calib_points_diff.y, calib_points_diff.x);
 
     // Vector3D<double> results = changeLLAtoMeters(calib_point1, calib_point3); // Compute homogenueity calibration terms
     // Vector3D<double> results_elev=offsetElevation(results,-calib_point1.z);
@@ -75,7 +75,7 @@ void Global2Inertial::process(DataMsg* t_msg, Port* t_port)
         OptitrackMsg* opti_msg = ((OptitrackMsg*)t_msg);
         Vector3D<double> att_vec = getEulerfromQuaternion(opti_msg->attitude_heading);
         Vector3D<double> result_pos = this->translatePoint(opti_msg->position);
-        //result_pos = this->rotatePoint(result_pos);
+        result_pos = this->rotatePoint(result_pos);
       
         Vector3DMsg results_msg;
         results_msg.data = result_pos;
@@ -147,16 +147,16 @@ Vector3D<double> Global2Inertial::offsetElevation(Vector3D<double> t_input,doubl
 
 Vector3D<double> Global2Inertial::rotatePoint(Vector3D<double> t_input_point){
         
-    // Vector3D<double> euler_calib;
-    // euler_calib.z = calibrated_global_to_inertial_angle;
-    // Vector3D<double> calibrated_input_point;
-    // RotationMatrix3by3 G_I_rot_matrix;
+    Vector3D<double> euler_calib;
+    euler_calib.z = calibrated_global_to_inertial_angle;
+    Vector3D<double> calibrated_input_point;
+    RotationMatrix3by3 G_I_rot_matrix;
 
-    // G_I_rot_matrix.Update(euler_calib); 
-    // G_I_rot_matrix.Transpose();
-    // calibrated_input_point = G_I_rot_matrix.TransformVector(t_input_point);
+    G_I_rot_matrix.Update(euler_calib); 
+    //G_I_rot_matrix.Transpose();
+    calibrated_input_point = G_I_rot_matrix.TransformVector(t_input_point);
 
-    // return calibrated_input_point;
+    return calibrated_input_point;
 }
 
 Vector3D<double> Global2Inertial::transformVelocity(Vector3D<double> t_input_point){

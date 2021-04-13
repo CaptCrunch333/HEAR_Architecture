@@ -25,11 +25,24 @@ void Sum::process(DataMsg* t_msg, Port* t_port) {
         FloatMsg* float_msg = (FloatMsg*)t_msg;
         float data = float_msg->data;
         _v1 = data;
-        this->runTask();
+        _p1++;
+        if(_p1 > _p2){
+            this->runTask();
+            if(_p1>5) {
+                _p1 = 1; _p2 = 0;
+            }
+        }
+        
     }else if(t_port->getID() == ports_id::IP_1_DATA){ 
         FloatMsg* float_msg = (FloatMsg*)t_msg;
         float data = float_msg->data;
         _v2 = data;
-        this->runTask();
+        _p2++;
+        if(_p2 > _p1){
+            this->runTask();
+            if(_p2>5) {
+                _p1 = 0; _p2 = 1;
+            }
+        }
     }
 }

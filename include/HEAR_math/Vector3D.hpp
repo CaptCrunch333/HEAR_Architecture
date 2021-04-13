@@ -86,6 +86,20 @@ class Vector3D {
                 static double getL2Norm(Vector3D<T> vec1) {
                     return sqrt(vec1.x*vec1.x+vec1.y*vec1.y+vec1.z*vec1.z);
                 }
+
+
+                static Vector3D<T> cross(Vector3D<T> vec1,Vector3D<T> vec2) {
+                        Vector3D<T> results;
+                        results.x=vec1.y*vec2.z-vec1.z*vec2.y;
+                        results.y=vec1.z*vec2.x-vec1.x*vec2.z;
+                        results.z=vec1.x*vec2.y-vec1.y*vec2.x;
+                        return results;
+                }
+
+                static double dot(Vector3D<T> vec1,Vector3D<T> vec2) {
+                    return vec1.x*vec2.x+vec1.y*vec2.y+vec1.z*vec2.z;
+                }
+
                 Vector2D<T> project_xy() {
                         Vector2D<T> res;
                         res.x=this->x;

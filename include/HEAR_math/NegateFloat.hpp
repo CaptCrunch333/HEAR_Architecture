@@ -5,16 +5,15 @@
 #include "HEAR_core/Block.hpp"
 #include "HEAR_msg/FloatMsg.hpp"
 
-class AvgFilter : public Block {
+class NegateFloat : public Block {
 private:
     Port* _input_port;
     Port* _output_port;
-    float _old_val;
     FloatMsg _float_msg;
     int _num_samples = 0;
 public:
     enum ports_id {IP_0_DATA, OP_0_DATA};
     void process(DataMsg* t_msg, Port* t_port);
-    AvgFilter(int);
-    ~AvgFilter();
+    NegateFloat();
+    ~NegateFloat();
 };

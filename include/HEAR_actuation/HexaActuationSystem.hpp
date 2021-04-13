@@ -20,6 +20,7 @@
 // Mx = [x, y, direction, thottle]
 // POSITIVE PITCH result in moving in the direction of POSITIVE X
 // NEGATIVE ROLL result in moving in the direction of POSITIVE Y
+// Using YPR rotation sequence in the construction of the Rotation Matrix
 
 class HexaActuationSystem : public ActuationSystem {
 private: 
